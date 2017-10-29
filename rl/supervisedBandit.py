@@ -6,9 +6,9 @@ class SupervisedBandit(Algorithm):
         self.model         = model
         self.dataBuffer    = dataBuffer
 
-    def act(self,s):
+    def act(self,tup):
 
-        a = self.model.predict(s)
+        a = self.model.predict(tup)
         return a
 
     def store(self,tup):
@@ -17,9 +17,6 @@ class SupervisedBandit(Algorithm):
 
     def update_step(self):
 
-        tup = self.dataBuffer.sample()
+        tupList = self.dataBuffer.sample()
 
-        X    = tup[0]
-        Y    = tup[2]
-
-        self.model.train(s,y)
+        self.model.train(tupList)

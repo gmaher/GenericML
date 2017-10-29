@@ -10,7 +10,7 @@ class Trainer:
 
     def train(self):
 
-        algorithm.initialize()
+        self.algorithm.initialize()
 
         for i in range(self.N):
             iter_ = 0
@@ -19,14 +19,14 @@ class Trainer:
 
             while not done and iter_ < self.Nsteps:
 
-                a = algorithm.act(s)
+                a = self.algorithm.act(s)
 
                 sprime,r,done,_ = self.env.step(a)
 
-                algorithm.store((s,a,r,sprime,i,iter_))
+                self.algorithm.store((s,a,r,sprime,i,iter_))
 
-                algorithm.update_step()
+                self.algorithm.update_step()
 
                 iter_ += 1
 
-            algorithm.update_episode()
+            self.algorithm.update_episode()
