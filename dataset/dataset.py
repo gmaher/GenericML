@@ -10,19 +10,16 @@ class DataSet(object):
 
 class ListDataSet(DataSet):
     def __init__(self):
-        self.X = []
-        self.Y = []
+        self.data = []
 
-    def append(self,x,y):
-        self.X.append(x)
-        self.Y.append(y)
+    def append(self,d):
+        self.data.append(d)
 
     def sample(self):
-        return self.X,self.Y
+        return self.data
 
     def clear(self):
-        self.X = []
-        self.Y = []
+        self.data = []
 
 class LookbackDataSet(ListDataSet):
     def __init__(self,lookback):
@@ -30,4 +27,4 @@ class LookbackDataSet(ListDataSet):
         self.lookback = lookback
 
     def sample(self):
-        return self.X[-self.lookback:], self.Y[-self.lookback:]
+        return self.data[-self.lookback:]

@@ -1,10 +1,11 @@
 class Trainer:
-    def __init__(self,algorithm,env,Nepisodes,Nsteps):
+    def __init__(self,algorithm,env,logger,Nepisodes,Nsteps):
         """
         Initialize trainer object with chosen algorithm, environment and options
         """
         self.algorithm = algorithm
         self.env       = env
+        self.logger    = logger
         self.N = Nepisodes
         self.Nsteps = Nsteps
 
@@ -15,17 +16,21 @@ class Trainer:
         for i in range(self.N):
             iter_ = 0
             done = False
-            s = self.env.reset()
+            data,done = self.env.reset()
 
             while not done and iter_ < self.Nsteps:
 
-                a = self.algorithm.act(s)
+                a = self.algorithm.act(data)
 
-                sprime,r,done,_ = self.env.step(a)
+                newData,done = self.env.step(a)
 
-                self.algorithm.store((s,a,r,sprime,i,iter_))
+                self.logger.log((data,newData,i,iter_))
+
+                self.algorithm.store((data,newData,i,iter_))
 
                 self.algorithm.update_step()
+
+                data = newData
 
                 iter_ += 1
 
