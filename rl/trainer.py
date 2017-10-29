@@ -1,11 +1,10 @@
 class Trainer:
-    def __init__(self,algorithm,env,options,Nepisodes,Nsteps):
+    def __init__(self,algorithm,env,Nepisodes,Nsteps):
         """
         Initialize trainer object with chosen algorithm, environment and options
         """
         self.algorithm = algorithm
         self.env       = env
-        self.options   = options
         self.N = Nepisodes
         self.Nsteps = Nsteps
 
@@ -18,7 +17,7 @@ class Trainer:
             done = False
             s = self.env.reset()
 
-            while not done and iter_ < self.N_steps:
+            while not done and iter_ < self.Nsteps:
 
                 a = algorithm.act(s)
 
