@@ -13,13 +13,16 @@ class QGreedy(Algorithm):
 
         qList = []
         for a in actions:
+
             t = (s,a)
             q = self.model.predict(t)
             qList.append(q)
 
         qList = np.asarray(qList)
-        inds = np.argmax(qList,axis=1)
-        a = np.asarray([actions[i,inds[i]] for i in range(len(inds))])
+
+        inds = np.argmax(qList,axis=0)
+        a = np.asarray([actions[inds[i],i] for i in range(len(inds))])
+
         return a
 
     def store(self,tup):
