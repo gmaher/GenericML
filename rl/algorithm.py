@@ -16,3 +16,20 @@ class Algorithm:
 
     def update_episode(self):
         pass
+
+class SimpleRL(Algorithm):
+    def __init__(self, model, explorer, dataBuffer):
+        self.model         = model
+        self.dataBuffer    = dataBuffer
+        self.explorer      = explorer
+
+    def act(self,s):
+        a = explorer.explore(s,model)
+        return a
+
+    def store(self,tup):
+        self.dataBuffer.append(tup)
+
+    def update_step(self):
+        trainingData = self.dataBuffer.sample()
+        self.model.train(trainingData)
