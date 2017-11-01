@@ -23,8 +23,8 @@ class SimpleRL(Algorithm):
         self.dataBuffer    = dataBuffer
         self.explorer      = explorer
 
-    def act(self,s):
-        a = explorer.explore(s,model)
+    def act(self,data):
+        a = explorer.explore(data,model)
         return a
 
     def store(self,tup):

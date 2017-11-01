@@ -6,6 +6,7 @@ class Explorer:
     def explore(self,data,model):
         pass
 
-class Greedy(Explorer):
-    def explore(self,data):
-        for a in self.actionSpace
+class GreedyScalar(Explorer):
+    def explore(self,data,model):
+        for a in self.actionSpace.actions():
+            q = getPrediction(data,a)
