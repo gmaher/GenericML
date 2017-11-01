@@ -24,7 +24,7 @@ class SimpleRL(Algorithm):
         self.explorer      = explorer
 
     def act(self,data):
-        a = explorer.explore(data,model)
+        a = self.explorer.explore(data,self.model)
         return a
 
     def store(self,tup):

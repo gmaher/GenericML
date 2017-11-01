@@ -5,8 +5,13 @@ class Explorer:
         self.actionSpace = actionSpace
     def explore(self,data,model):
         pass
+    def getPrediction(self,data,model):
+        raise RuntimeError('getPrediction not implemented')
 
-class GreedyScalar(Explorer):
+class GreedyVector(Explorer):
     def explore(self,data,model):
-        for a in self.actionSpace.actions():
-            q = getPrediction(data,a)
+        """Q,A = (Nbatch x Nactions)"""
+        Q,A = self.getPrediction(data,model)
+        inds = np.argmax(Q,axis=1)
+        a = np.asarray([A[i,inds[i]] for i in range(len(inds))])
+        return a
