@@ -68,7 +68,7 @@ class TFModel(Model):
     def train(self,data):
         pass
 
-    def trainStep(self,data):
+    def train(self,data):
         X,Y = self.trainPreprocessor(data)
         self.sess.run(self.train_op,
             {self.x_plh:X,self.y_plh:Y})
