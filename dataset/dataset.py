@@ -32,10 +32,10 @@ class DataframeDataSet(DataSet):
     def __init__(self,file_path):
         self.data = pd.read_csv(file_path)
 
-    def sample():
+    def sample(self):
         return self.data
-        
-    def clear():
+
+    def clear(self):
         self.data = None
 
 class ListDataSet(DataSet):
