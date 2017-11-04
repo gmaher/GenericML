@@ -11,6 +11,7 @@ class Preprocessor:
     def __call__(self,data):
         return data
 
+#TODO: Filter malformed rows, e.g. string not a string ,date not a date etc.
 class DataframePreprocessor(Preprocessor):
     def __init__(self, required_columns, label_column,string_columns=None, date_columns=None):
         self.required_columns = required_columns
@@ -28,7 +29,7 @@ class DataframePreprocessor(Preprocessor):
             df_proc = df.loc[:,self.required_columns]
 
         if not self.string_columns == None:
-            df_proc[self.string_cols] = df_proc[self.string_cols].astype(str)
+            df_proc[self.string_columns] = df_proc[self.string_columns].astype(str)
 
         if not self.date_columns == None:
             for c in self.date_columns:
