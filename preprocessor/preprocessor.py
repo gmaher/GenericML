@@ -20,11 +20,7 @@ class DataframePreprocessor(Preprocessor):
 
     def preprocess(self,data):
 
-        if type(data) == dict:
-            df = pd.DataFrame(columns=data.keys())
-            df = df.append(data,ignore_index=True)
-        else:
-            df = data
+        df = data
 
         if any([c==self.label_column[0] for c in df.columns]):
             df_proc = df.loc[:,self.required_columns+self.label_column]
@@ -57,8 +53,15 @@ class DataframePreprocessor(Preprocessor):
         self.all_columns = [c for c in df.columns if not c == self.label_column[0]]
 
     def predict(self,data):
-        d = self.preprocess(data)
+        if type(data) == dict:
+            df = pd.DataFrame(columns=data.keys())
+            df = df.append(data,ignore_index=True)
+
+        if any([c==self.label_column[0] for c in df.columns]):
+            df = df.drop(self.label_column,axis=1)
+        d = self.preprocess(df)
         d = pd.DataFrame(columns=self.all_columns).append(d,ignore_index=True)
+        d = d[self.all_columns]
         d = d.fillna(0)
         return d
 
