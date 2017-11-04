@@ -19,12 +19,14 @@ class DataframePreprocessor(Preprocessor):
         self.label_column     = label_column
 
     def preprocess(self,data):
+
         if type(data) == dict:
             df = pd.DataFrame(columns=data.keys())
             df = df.append(data,ignore_index=True)
         else:
             df = data
-        if any([c==self.label_column for c in df.columns]):
+
+        if any([c==self.label_column[0] for c in df.columns]):
             df_proc = df.loc[:,self.required_columns+self.label_column]
         else:
             df_proc = df.loc[:,self.required_columns]
@@ -50,8 +52,15 @@ class DataframePreprocessor(Preprocessor):
 
         return df_proc
 
+    def get_columns(self,data):
+        df = self.preprocess(data)
+        self.all_columns = [c for c in df.columns if not c == self.label_column[0]]
+
     def predict(self,data):
-        return self.preprocess(data)
+        d = self.preprocess(data)
+        d = pd.DataFrame(columns=self.all_columns).append(d,ignore_index=True)
+        d = d.fillna(0)
+        return d
 
     def train(self,data):
         df = self.preprocess(data)
