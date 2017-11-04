@@ -19,6 +19,8 @@ class DataframePreprocessor(Preprocessor):
         self.label_column     = label_column
 
     def preprocess(self,data):
+        if type(data) == dict:
+            data = pd.DataFrame.from_dict(data)
         df_proc = data.loc[:,self.required_columns+self.label_column]
 
         if not self.string_columns == None:
@@ -34,7 +36,7 @@ class DataframePreprocessor(Preprocessor):
                 df_proc[c+'_DAY'] = df_proc[c+'_DAY'].astype(int)
 
                 df_proc[c+'_MONTH'] = df_proc[c+'_MONTH'].astype(str)
-            df_proc = df_proc.drop(date_cols,axis=1)
+            df_proc = df_proc.drop(self.date_columns,axis=1)
 
         df_proc = df_proc.fillna(0)
 

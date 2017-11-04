@@ -5,10 +5,11 @@ from GenericML.rl.algorithm import SimpleRL
 from GenericML.rl.trainer import Trainer
 from GenericML.dataset.dataset import LookbackDataSet
 from GenericML.rl.explore import GreedyVector
-from GenericML.ramework.experiment import Experiment
+from GenericML.framework.experiment import Experiment
 
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
+import numpy as np
 
 #Always put configure and finalize at the top
 def configure(params):
@@ -51,7 +52,7 @@ def configure(params):
 
         regressor.fit(X,r)
 
-    trainer = Trainer(alg,env,logger,params["N_EPISODES"],params["N_EPISODES"])
+    trainer = Trainer(alg,env,logger,params["N_EPISODES"],params["N_PERIODS"])
 
     def finalize():
         R_obs = np.cumsum(logger.results['R_obs'])
@@ -123,6 +124,7 @@ def buildPreprocessors(END_COL):
         if Y.shape[0] == 1: Y = Y[0,:END_COL]
 
         return X[:,:END_COL],Y
+    return predictPreprocessor, trainPreprocessor
 
 class LinearPricingModel(SKLearnModel):
     def predict(self,data):
