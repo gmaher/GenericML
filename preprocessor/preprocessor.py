@@ -19,7 +19,7 @@ class DataframePreprocessor(Preprocessor):
         self.label_column     = label_column
 
     def preprocess(self,data):
-        df_proc = data.loc[:,self.required_columns]
+        df_proc = data.loc[:,self.required_columns+self.label_column]
 
         if not self.string_columns == None:
             df_proc[self.string_cols] = df_proc[self.string_cols].astype(str)
@@ -35,6 +35,7 @@ class DataframePreprocessor(Preprocessor):
 
                 df_proc[c+'_MONTH'] = df_proc[c+'_MONTH'].astype(str)
             df_proc = df_proc.drop(date_cols,axis=1)
+
         df_proc = df_proc.fillna(0)
 
         df_proc = pd.get_dummies(df_proc)
