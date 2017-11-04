@@ -22,7 +22,8 @@ class DataframePreprocessor(Preprocessor):
         if type(data) == dict:
             df = pd.DataFrame(columns=data.keys())
             df.append(data,ignore_index=True)
-        df = data
+        else:
+            df = data
         if any([c==self.label_column for c in df.columns]):
             df_proc = df.loc[:,self.required_columns+self.label_column]
         else:
