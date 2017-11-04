@@ -20,8 +20,10 @@ class DataframePreprocessor(Preprocessor):
 
     def preprocess(self,data):
         if type(data) == dict:
-            data = pd.DataFrame.from_dict(data)
-        df_proc = data.loc[:,self.required_columns+self.label_column]
+            df = pd.DataFrame(columns=data.keys())
+            df.append(data,ignore_index=True)
+        df = data
+        df_proc = df.loc[:,self.required_columns+self.label_column]
 
         if not self.string_columns == None:
             df_proc[self.string_cols] = df_proc[self.string_cols].astype(str)
