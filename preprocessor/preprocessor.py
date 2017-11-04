@@ -50,8 +50,15 @@ class DataframePreprocessor(Preprocessor):
 
         return df_proc
 
+    def get_columns(self,data):
+        df = self.preprocess(data)
+        self.all_columns = df.columns
+
     def predict(self,data):
-        return self.preprocess(data)
+        d = self.preprocess(data)
+        d = pd.DataFrame(columns=self.all_columns).append(d,ignore_index=True)
+        d = d.fillna(0)
+        return d
 
     def train(self,data):
         df = self.preprocess(data)
