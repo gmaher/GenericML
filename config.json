@@ -1,0 +1,15 @@
+{
+  "P_MIN":0.0,
+  "P_MAX":3.0,
+  "N_INTERVALS":50,
+  "N_EPISODES":1,
+  "N_PERIODS":1000,
+  "L_PERIOD":10,
+  "ALPHA":1.0,
+  "GAMMA":0.2,
+  "SIGMA":-0.5,
+  "COV_RANGE":0.1,
+  "N_COVARIATES":10,
+  "END_COL":-1,
+  "LOOKBACK":100
+}

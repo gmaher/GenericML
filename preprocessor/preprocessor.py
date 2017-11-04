@@ -5,7 +5,7 @@ def max_date(x):
     d = datetime(2020,1,1)
     if x > d:
         return d
-    return x
+    return x0
 
 class Preprocessor:
     def __call__(self,data):
@@ -35,15 +35,15 @@ class DataframePreprocessor(Preprocessor):
 
                 df_proc[c+'_MONTH'] = df_proc[c+'_MONTH'].astype(str)
             df_proc = df_proc.drop(date_cols,axis=1)
-            df_proc = df_proc.fillna(0)
+        df_proc = df_proc.fillna(0)
 
         df_proc = pd.get_dummies(df_proc)
         return df_proc
 
     def predict(self,data):
-        df = preprocess(data)
+        df = self.preprocess(data)
         return df.drop(self.label_column,axis=1)
 
     def train(self,data):
-        df = preprocess(data)
+        df = self.preprocess(data)
         return df.drop(self.label_column,axis=1),df[self.label_column]
