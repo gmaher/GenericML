@@ -21,7 +21,7 @@ class DataframePreprocessor(Preprocessor):
     def preprocess(self,data):
         if type(data) == dict:
             df = pd.DataFrame(columns=data.keys())
-            df.append(data,ignore_index=True)
+            df = df.append(data,ignore_index=True)
         else:
             df = data
         if any([c==self.label_column for c in df.columns]):
@@ -47,11 +47,11 @@ class DataframePreprocessor(Preprocessor):
         df_proc = df_proc.fillna(0)
 
         df_proc = pd.get_dummies(df_proc)
+
         return df_proc
 
     def predict(self,data):
-        df = self.preprocess(data)
-        return df.drop(self.label_column,axis=1)
+        return self.preprocess(data)
 
     def train(self,data):
         df = self.preprocess(data)
