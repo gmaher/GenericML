@@ -23,7 +23,10 @@ class DataframePreprocessor(Preprocessor):
             df = pd.DataFrame(columns=data.keys())
             df.append(data,ignore_index=True)
         df = data
-        df_proc = df.loc[:,self.required_columns+self.label_column]
+        if any([c==self.label_column for c in df.columns]):
+            df_proc = df.loc[:,self.required_columns+self.label_column]
+        else:
+            df_proc = df.loc[:,self.required_columns]
 
         if not self.string_columns == None:
             df_proc[self.string_cols] = df_proc[self.string_cols].astype(str)
