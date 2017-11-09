@@ -39,14 +39,19 @@ class DataframeDataSet(DataSet):
         self.data = None
 
 class ListDataSet(DataSet):
-    def __init__(self):
+    def __init__(self, batch_mode=False, batch_size=32):
         self.data = []
-
+        self.batch_mode = batch_mode
+        self.batch_size = batch_size
     def append(self,d):
         self.data.append(d)
 
     def sample(self):
-        return self.data
+        if self.batch_mode == False:
+            return self.data
+        else:
+            ids = np.random.choice(len(self.data),self.batch_size)
+            return [self.data[i] for i in ids]
 
     def clear(self):
         self.data = []

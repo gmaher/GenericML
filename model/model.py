@@ -10,12 +10,16 @@ def listPreprocessor(tupList):
     return X,Y
 
 class Model(object):
-    def __init__(self):
+    def __init__(self,regressor):
         self.setPreprocessors()
+        self.regressor = regressor
     def predict(self,data):
-        pass
+        X = self.predictPreprocessor(data)
+        self.predictions = self.regressor.predict(X)
+        return self.predictions
     def train(self,data):
-        pass
+        X,Y = self.trainPreprocessor(data)
+        self.regressor.fit(X,Y)
     def setPreprocessors(self,predictPreprocessor=standardPreprocessor,
     trainPreprocessor=listPreprocessor):
         self.predictPreprocessor = predictPreprocessor
@@ -26,19 +30,6 @@ class Model(object):
         pass
 
 class SKLearnModel(Model):
-    def __init__(self,model_):
-        super(SKLearnModel,self).__init__()
-        self.model = model_
-
-    def predict(self,data):
-        X = self.predictPreprocessor(data)
-        self.predictions = self.model.predict(X)
-        return self.predictions
-
-    def train(self,data):
-        X,Y = self.trainPreprocessor(data)
-        self.model.fit(X,Y)
-
     def save(self,fn):
         joblib.dump(self.model,fn)
 
@@ -48,33 +39,16 @@ class SKLearnModel(Model):
             raise RuntimeError('failed to load model at {}'.format(fn))
 
 class TFModel(Model):
-    def __init__(x_plh,y_plh,output_op,train_op,session,
-        saver=None):
-        super(TFModel,self).__init__()
-
-        self.x = x_plh
-        self.y = y_plh
-        self.output_op = output_op
-        self.train_op = train_op
+    def __init__(self,regressor,session,saver):
+        super(TFModel,self).__init__(regressor)
         self.session = session
         self.saver = saver
-
-    def predict(self,data):
-        X = self.predictPreprocessor(data)
-        self.predictions = sess.run(self.output_op,
-            {self.x:X})
-        return self.predictions
-
-    def train(self,data):
-        pass
-
-    def train(self,data):
-        X,Y = self.trainPreprocessor(data)
-        self.sess.run(self.train_op,
-            {self.x_plh:X,self.y_plh:Y})
 
     def save(self,fn):
         self.saver.save(self.session,fn)
 
     def load(self,fn):
         self.saver.restore(self.session,fn)
+
+    def copy(self):
+        self.regressor.copy()

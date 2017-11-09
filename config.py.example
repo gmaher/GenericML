@@ -1,0 +1,37 @@
+from GenericML.framework.experiment import Experiment
+import matplotlib.pyplot as plt
+import numpy as np
+
+#Always put configure and finalize at the top
+def configure(params):
+    actionSpace    = ...
+
+    regressor = ...
+
+    predictPreprocessor,trainPreprocessor = ...
+
+    model     = ...
+    model.setPreprocessors(predictPreprocessor,trainPreprocessor)
+
+    explorer  = ...
+
+    dataset   = ...
+
+    alg       = ...
+    env       = ...
+
+    logger    = ...
+
+    trainer   = ...
+
+    def initialize():
+
+    def finalize():
+
+    experiment = Experiment(initialize,trainer.train,finalize)
+
+    return experiment
+
+##############################################
+# Defintitions
+##############################################

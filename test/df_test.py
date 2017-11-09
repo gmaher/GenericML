@@ -16,7 +16,7 @@ def random_date(start,end):
     random_day = date.fromordinal(random.randint(start_date, end_date))
     return random_day
 
-preprocessor = DataframePreprocessor(required_columns=['A,B,C'],
+preprocessor = DataframePreprocessor(required_columns=['A','B','C'],
     string_columns=['B'],
     label_column=['D'],
     date_columns=['C'])
@@ -54,9 +54,19 @@ for i in range(N):
         d4 = None
     if r > 0.1 and r < 0.2:
         d3 = None
+    if r > 0.2 and r < 0.3:
+        d2 = None
+    if r>0.3 and r < 0.4:
+        d2 = np.random.rand()*(number_end-number_start) + number_start
+        d3 = 'blah'
+        d1 = -2
+    if r>0.4 and r < 0.5:
+        d1 = 'brrr'
 
     d = {"A":d1, "B":d2, "C":d3, "D":d4}
 
     df = df.append(d,ignore_index=True)
 
 model.train(df)
+
+X = model.predict(df)

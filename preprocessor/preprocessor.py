@@ -5,11 +5,16 @@ def max_date(x):
     d = datetime(2020,1,1)
     if x > d:
         return d
-    return x0
+    return x
 
 class Preprocessor:
     def __call__(self,data):
         return data
+
+def valid_string(x):
+    if not type(x) == str:
+        return False
+    return True
 
 #TODO: Filter malformed rows, e.g. string not a string ,date not a date etc.
 class DataframePreprocessor(Preprocessor):
@@ -22,12 +27,13 @@ class DataframePreprocessor(Preprocessor):
     def preprocess(self,data):
 
         df = data
-
+        for c in self.string_columns:
+            df = df[df[c].map(valid_string)]
+        import pdb; pdb.set_trace()
         if any([c==self.label_column[0] for c in df.columns]):
             df_proc = df.loc[:,self.required_columns+self.label_column]
         else:
             df_proc = df.loc[:,self.required_columns]
-
         if not self.string_columns == None:
             df_proc[self.string_columns] = df_proc[self.string_columns].astype(str)
 
