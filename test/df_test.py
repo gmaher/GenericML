@@ -19,7 +19,7 @@ def random_date(start,end):
 preprocessor = DataframePreprocessor(required_columns=['A','B','C'],
     string_columns=['B'],
     label_column=['D'],
-    date_columns=['C'])
+    date_columns=['A'])
 
 regressor = RandomForestRegressor()
 
@@ -66,7 +66,7 @@ for i in range(N):
     d = {"A":d1, "B":d2, "C":d3, "D":d4}
 
     df = df.append(d,ignore_index=True)
-
+preprocessor.get_columns(df)
 model.train(df)
 
 X = model.predict(df)
