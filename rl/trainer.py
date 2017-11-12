@@ -1,5 +1,5 @@
 class Logger:
-    def __init__(self,env,print_fn,render_fn,save_fn,n_print=100,n_render=10,n_save=10,theta=0.9):
+    def __init__(self,env,print_fn,render_fn,save_fn,n_print=100,n_render=10,n_save=10,theta=0.99):
         self.print_fn = print_fn
         self.render_fn = render_fn
         self.save_fn = save_fn

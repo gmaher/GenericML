@@ -1,6 +1,6 @@
 from sklearn.linear_model import LinearRegression
-from sklearn.externals import joblib
-import pdb
+import cPickle as pickle
+
 def standardPreprocessor(tup):
     return tup[0]
 
@@ -31,10 +31,10 @@ class Model(object):
 
 class SKLearnModel(Model):
     def save(self,fn):
-        joblib.dump(self.model,fn)
+        pickle.dump(self,fn)
 
     def load(self,fn):
-        self.model = joblib.load(fn)
+        self.__dict__.update(pickle.loads(fn).__dict__)
         if self.model==None:
             raise RuntimeError('failed to load model at {}'.format(fn))
 
