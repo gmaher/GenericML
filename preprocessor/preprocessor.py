@@ -41,62 +41,111 @@ class Preprocessor:
         return data
 
 class DataframePreprocessor(Preprocessor):
-    def __init__(self, required_columns, label_column,string_columns=None, date_columns=None):
+    def __init__(self, required_columns, label_column, string_columns=None, date_columns=None, date_parser=None):
+        """
+        Notes:
+        - self.number columns will not contain self.label_column
+        """
         self.required_columns = required_columns
         self.string_columns   = string_columns
         self.date_columns     = date_columns
         self.label_column     = label_column
-        self.number_columns   = [c for c in self.required_columns if\
-         not (any([c==k for k in self.string_columns]) or\
-          any([c==h for h in self.date_columns]))]
+        self.date_parser      = date_parser
+        if (not self.date_parser == None) and (self.date_columns == None):
+            raise RuntimeError("date_columns and date_parser must both be specified,\
+             can't have one without the other")
+
+        if (not self.string_columns==None) and (not self.date_columns == None):
+            self.number_columns   = [c for c in self.required_columns if\
+             not (any([c==k for k in self.string_columns]) or\
+              any([c==h for h in self.date_columns]))]
+
+        elif not self.string_columns == None:
+            self.number_columns   = [c for c in self.required_columns if\
+             not (any([c==k for k in self.string_columns]))]
+
+        elif not self.date_columns == None:
+            self.number_columns   = [c for c in self.required_columns if\
+             not (any([c==k for k in self.date_columns]))]
+
+        else:
+            self.number_columns = None
+
+    def extract_relevant_columns(self,df):
+        if any([c == self.label_column[0] for c in df.columns]):
+            df = df[self.required_columns+self.label_column]
+        else:
+            df = df[self.required_columns]
+
+        return df
+
+    def process_label_column(self,df):
+        if any([c == self.label_column for c in df.columns]):
+            df[self.label_column] =\
+             df[self.label_column].fillna(df[self.label_column].mean())
+            df = df[df[self.label_column].map(valid_number)]
+
+        return df
+
+    def process_date_columns(self,df):
+
+        if not self.date_columns == None:
+            for c in self.date_columns:
+                df[c] = df[c].apply(max_date)
+                df[c+'_DAY'] = df[c].map(to_day)
+                df[c+'_MONTH'] = df[c].map(to_month)
+
+                df[c+'_DAY'] = df[c+'_DAY'].astype(int)
+
+                df[c+'_MONTH'] = df[c+'_MONTH'].astype(int)
+            df = df.drop(self.date_columns,axis=1)
+        return df
+
+    def process_string_columns(self,df):
+        if not self.string_columns == None:
+
+            df[self.string_columns] = df[self.string_columns].astype(str)
+
+            df_dummies = pd.get_dummies(df[self.string_columns])
+
+            df = df.drop(self.string_columns,axis=1)
+
+            df = pd.merge(df,df_dummies,left_index=True,right_index=True)
+
+        return df
+
+    def remove_invalid_rows(self,df):
+        if not self.string_columns == None:
+            for c in self.string_columns:
+                df = df[df[c].map(valid_string)]
+
+        if not self.date_columns == None:
+            for c in self.date_columns:
+                df[c] = df[c].map(self.date_parser)
+                df = df[df[c].map(valid_date)]
+
+        if not self.number_columns == None:
+            for c in self.number_columns:
+                df[c] = df[c].fillna(df[c].mean())
+                df = df[df[c].map(valid_number)]
+
+        return df
+
     def preprocess(self,data):
 
         df = data
-        for c in self.string_columns:
-            df = df[df[c].map(valid_string)]
-
-        for c in self.date_columns:
-            df = df[df[c].map(valid_date)]
-
-        for c in self.number_columns:
-            df = df[df[c].map(valid_number)]
+        df = self.extract_relevant_columns(df)
+        df = self.remove_invalid_rows(df)
 
         if (1.0*df.shape[0])/data.shape[0] < REDUCTION_CUTOFF:
             raise PreprocessorException("After discarding malformed rows only {}\
             fraction of data remains".format(REDUCTION_CUTOFF))
 
-        if any([c==self.label_column[0] for c in df.columns]):
-            df_proc = df.loc[:,self.required_columns+self.label_column]
-        else:
-            df_proc = df.loc[:,self.required_columns]
-        if not self.string_columns == None:
-            df_proc[self.string_columns] = df_proc[self.string_columns].astype(str)
+        df = self.process_label_column(df)
+        df = self.process_string_columns(df)
+        df = self.process_date_columns(df)
 
-        if not self.date_columns == None:
-            for c in self.date_columns:
-                df_proc[c] = df_proc[c].apply(max_date)
-                df_proc[c+'_DAY'] = df_proc[c].map(to_day)
-                df_proc[c+'_MONTH'] = df_proc[c].map(to_month)
-
-                df_proc[c+'_DAY'] = df_proc[c+'_DAY'].astype(int)
-
-                df_proc[c+'_MONTH'] = df_proc[c+'_MONTH'].astype(int)
-            df_proc = df_proc.drop(self.date_columns,axis=1)
-
-        for c in self.number_columns:
-
-            df_proc[c] = df_proc[c].fillna(df_proc[c].mean())
-
-        df_proc[self.label_column] =\
-            df_proc[self.label_column].fillna(df_proc[self.label_column].mean())
-
-        df_dummies = pd.get_dummies(df_proc[self.string_columns])
-
-        df_proc = df_proc.drop(self.string_columns,axis=1)
-
-        df_proc = pd.merge(df_proc,df_dummies,left_index=True,right_index=True)
-
-        return df_proc
+        return df
 
     def get_columns(self,data):
         df = self.preprocess(data)
@@ -118,4 +167,5 @@ class DataframePreprocessor(Preprocessor):
 
     def train(self,data):
         df = self.preprocess(data)
+
         return df.drop(self.label_column,axis=1),df[self.label_column]

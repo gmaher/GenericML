@@ -31,7 +31,10 @@ class Model(object):
 
 class SKLearnModel(Model):
     def save(self,fn):
-        pickle.dump(self,fn)
+        import pdb; pdb.set_trace()
+        f = open(fn, 'wb')
+        pickle.dump(self.__dict__, f, 2)
+        f.close()
 
     def load(self,fn):
         self.__dict__.update(pickle.loads(fn).__dict__)
