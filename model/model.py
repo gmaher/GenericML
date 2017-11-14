@@ -1,8 +1,11 @@
 from sklearn.linear_model import LinearRegression
 import cPickle as pickle
 
-def standardPreprocessor(tup):
-    return tup[0]
+class standardPreprocessor(object):
+    def predict(self, data):
+        return data[0]
+    def train(self, data):
+        return data[0], data[1]
 
 def listPreprocessor(tupList):
     X = np.asarray([t[0] for t in tupList])
@@ -14,16 +17,15 @@ class Model(object):
         self.setPreprocessors()
         self.regressor = regressor
     def predict(self,data):
-        X = self.predictPreprocessor(data)
+        X = self.preprocessor.predict(data)
         self.predictions = self.regressor.predict(X)
         return self.predictions
     def train(self,data):
-        X,Y = self.trainPreprocessor(data)
+        X,Y = self.preprocessor.train(data)
         self.regressor.fit(X,Y)
-    def setPreprocessors(self,predictPreprocessor=standardPreprocessor,
-    trainPreprocessor=listPreprocessor):
-        self.predictPreprocessor = predictPreprocessor
-        self.trainPreprocessor   = trainPreprocessor
+    def setPreprocessor(self,preprocessor=standardPreprocessor):
+        self.preprocessor = preprocessor
+        
     def save(self,fn):
         pass
     def load(self,fn):
